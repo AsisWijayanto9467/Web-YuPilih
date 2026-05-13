@@ -92,6 +92,9 @@ export default function CreatePoli() {
                     <button className="btn btn-success">
                         Save Polling
                     </button>
+                    <button className="btn btn-secondary ms-2" onClick={() => navigate("/pool")}>
+                        Back
+                    </button>
                 </form>
             </div>
         </>

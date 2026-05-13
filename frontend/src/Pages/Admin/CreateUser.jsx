@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
-import Main from "../layouts/Main";
 import MainAdmin from "../layouts/MainAdmin";
 
 export default function CreateUser() {
@@ -61,85 +60,82 @@ export default function CreateUser() {
     return (
         <>
             <MainAdmin />
-            
 
-            <div className="container mt-4" style={{ maxWidth: 500 }}>
-                <h4 className="mb-3">Create User</h4>
+            <div className="container mt-4">
+                <h4>Create User</h4>
 
                 <form onSubmit={handleSubmit}>
-                    <div className="mb-2">
-                        <input
-                            className={`form-control ${errors.username ? "is-invalid" : ""}`}
-                            placeholder="Username"
-                            name="username"
-                            value={form.username}
-                            onChange={handleChange}
-                        />
-                        {errors.username && (
-                            <div className="invalid-feedback">
-                                {errors.username[0]}
-                            </div>
-                        )}
-                    </div>
+                    <input
+                        className={`form-control mb-2 ${errors.username ? "is-invalid" : ""}`}
+                        placeholder="Username"
+                        name="username"
+                        value={form.username}
+                        onChange={handleChange}
+                    />
+                    {errors.username && (
+                        <div className="invalid-feedback mb-2">
+                            {errors.username[0]}
+                        </div>
+                    )}
 
-                    <div className="mb-2">
-                        <input
-                            type="password"
-                            className={`form-control ${errors.password ? "is-invalid" : ""}`}
-                            placeholder="Password"
-                            name="password"
-                            value={form.password}
-                            onChange={handleChange}
-                        />
-                        {errors.password && (
-                            <div className="invalid-feedback">
-                                {errors.password[0]}
-                            </div>
-                        )}
-                        <small className="text-muted">
-                            Min 8 chars, uppercase, lowercase, number
-                        </small>
-                    </div>
+                    <input
+                        type="password"
+                        className={`form-control mb-2 ${errors.password ? "is-invalid" : ""}`}
+                        placeholder="Password"
+                        name="password"
+                        value={form.password}
+                        onChange={handleChange}
+                    />
+                    {errors.password && (
+                        <div className="invalid-feedback mb-2">
+                            {errors.password[0]}
+                        </div>
+                    )}
+                    <small className="text-muted d-block mb-3">
+                        Min 8 chars, uppercase, lowercase, number
+                    </small>
 
-                    {/* Division */}
-                    <div className="mb-2">
-                        <select
-                            className={`form-control ${errors.division_id ? "is-invalid" : ""}`}
-                            name="division_id"
-                            value={form.division_id}
-                            onChange={handleChange}
-                        >
-                            <option value="">-- Select Division --</option>
-                            {divisions.map((div) => (
-                                <option key={div.id} value={div.id}>
-                                    {div.name}
-                                </option>
-                            ))}
-                        </select>
-                        {errors.division_id && (
-                            <div className="invalid-feedback">
-                                {errors.division_id[0]}
-                            </div>
-                        )}
-                    </div>
+                    <select
+                        className={`form-control mb-2 ${errors.division_id ? "is-invalid" : ""}`}
+                        name="division_id"
+                        value={form.division_id}
+                        onChange={handleChange}
+                    >
+                        <option value="">-- Select Division --</option>
+                        {divisions.map((div) => (
+                            <option key={div.id} value={div.id}>
+                                {div.name}
+                            </option>
+                        ))}
+                    </select>
+                    {errors.division_id && (
+                        <div className="invalid-feedback mb-2">
+                            {errors.division_id[0]}
+                        </div>
+                    )}
 
-                    <div className="mb-3">
-                        <select
-                            className="form-control"
-                            name="role"
-                            value={form.role}
-                            onChange={handleChange}
-                        >
-                            <option value="user">User</option>
-                            <option value="admin">Admin</option>
-                        </select>
-                    </div>
+                    <select
+                        className="form-control mb-3"
+                        name="role"
+                        value={form.role}
+                        onChange={handleChange}
+                    >
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
 
-                    <button
-                        className="btn btn-primary w-100"
+                    <button 
+                        className="btn btn-success" 
                         disabled={loading}
                     >
-                        {loading ? "Saving..." : "Save"}
+                        {loading ? "Saving..." : "Save User"}
+                    </button>
+                    <button 
+                        type="button"
+                        className="btn btn-secondary ms-2" 
+                        onClick={() => navigate("/dashboard/admin")}
+                    >
+                        Back
                     </button>
                 </form>
             </div>

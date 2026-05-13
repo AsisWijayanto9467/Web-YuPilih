@@ -12,7 +12,7 @@ use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
     public function login(Request $request) {
-        
+
 
         $validator = Validator::make($request->all(), [
             'username' => [
@@ -44,7 +44,7 @@ class AuthController extends Controller
                 "message" => "Email or password incorrect"
             ], 401);
         }
-        
+
         $token = $user->createToken($user->username . '_token')->plainTextToken;
 
         if (Hash::check("Password123", $user->password)) {
@@ -98,7 +98,7 @@ class AuthController extends Controller
         }
 
         $user->update([
-            'password'            => Hash::make($request->new_password)
+            'password' => Hash::make($request->new_password)
         ]);
 
         $user->tokens()->delete();

@@ -17,7 +17,7 @@ Route::prefix("v1")->group(function () {
 
 
     Route::middleware("auth:sanctum")->group(function() {
-        Route::prefix("admin")->group(function() {
+        Route::prefix("admins")->group(function() {
             Route::get("/", [AdminController::class, "getAdmins"])->middleware("admin");
         });
 
@@ -27,18 +27,24 @@ Route::prefix("v1")->group(function () {
         });
 
         Route::prefix("user")->group(function() {
+            Route::get("/{id}", [AdminController::class, "showUser"])->middleware("admin");
             Route::put("/{id}", [AdminController::class, "updateUser"])->middleware("admin");
             Route::delete("/{id}", [AdminController::class, "deleteUser"])->middleware("admin");
         });
 
         Route::prefix("pool")->group(function() {
-            Route::get('./', [PollController::class, 'getAllPool']);
+            Route::get('/', [PollController::class, 'getAllPool']);
             Route::post('/', [PollController::class, 'createPool'])->middleware("admin");
             Route::delete('/{id}', [PollController::class, 'deletePool'])->middleware("admin");
             Route::get('/{id}', [PollController::class, 'poolDetail']);
-            
+             Route::get('/{id}/check-vote', [PollController::class, 'checkUserVote']);
+
             Route::get('/{id}/result', [PollController::class, 'poolResult']);
             Route::post('/{id}/vote', [PollController::class, 'addVote'])->middleware("user");
+
+            Route::get('/{id}/report', [PollController::class, 'poolReport']);
+            Route::get('/{id}/report/pdf', [PollController::class, 'downloadReportPDF']);
+            Route::get('/{id}/report/csv', [PollController::class, 'downloadReportCSV']);
         });
 
         Route::prefix("divisions")->group(function() {

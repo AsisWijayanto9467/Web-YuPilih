@@ -68,10 +68,10 @@ export default function EditAdmin() {
 
     if (loading) {
         return (
-        <>
-            <Main />
-            <div className="container mt-4">Loading...</div>
-        </>
+            <>
+                <Main />
+                <div className="container mt-4">Loading...</div>
+            </>
         );
     }
 
@@ -100,9 +100,9 @@ export default function EditAdmin() {
             >
                 <option value="">-- Select Division --</option>
                 {divisions.map((div) => (
-                <option key={div.id} value={div.id}>
-                    {div.name}
-                </option>
+                    <option key={div.id} value={div.id}>
+                        {div.name}
+                    </option>
                 ))}
             </select>
             {errors.division_id && (

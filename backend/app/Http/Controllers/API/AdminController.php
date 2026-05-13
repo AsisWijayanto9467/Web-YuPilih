@@ -6,26 +6,70 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
-    public function getAdmins(Request $request)
-    {
+    public function getAdmins(Request $request) {
+        try {
+            $query = User::with('division')->where('role', 'admin');
 
-        $admins = User::with('division')->where('role', 'admin')->get();
+            // Search functionality
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('username', 'LIKE', "%{$search}%")
+                    ->orWhereHas('division', function($div) use ($search) {
+                        $div->where('name', 'LIKE', "%{$search}%");
+                    });
+                });
+            }
 
-        return response()->json([
-            "totalElements" => $admins->count(),
-            "content" => $admins->map(function ($admin) {
-                return [
-                    "id"         => $admin->id,
-                    "username"   => $admin->username,
-                    "division"   => $admin->division?->name,
-                    "created_at"=> $admin->created_at->format('Y-m-d H:i:s'),
-                    "updated_at"=> $admin->updated_at->format('Y-m-d H:i:s'),
-                ];
-            })
-        ], 200);
+            // Sorting
+            $sortBy = $request->get('sort_by', 'created_at');
+            $sortOrder = $request->get('sort_order', 'desc');
+            $allowedSorts = ['username', 'created_at', 'updated_at'];
+
+            if (in_array($sortBy, $allowedSorts)) {
+                $query->orderBy($sortBy, $sortOrder);
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+
+            // Pagination
+            $perPage = (int) $request->get('per_page', 10);
+            $admins = $query->paginate($perPage);
+
+            return response()->json([
+                "status" => "success",
+                "totalElements" => $admins->total(),
+                "content" => $admins->map(function ($admin) {
+                    return [
+                        "id"         => $admin->id,
+                        "username"   => $admin->username,
+                        "division"   => $admin->division->name ?? null,
+                        "created_at" => $admin->created_at,
+                        "updated_at" => $admin->updated_at,
+                    ];
+                }),
+                "pagination" => [
+                    "current_page" => $admins->currentPage(),
+                    "last_page" => $admins->lastPage(),
+                    "per_page" => $admins->perPage(),
+                    "total" => $admins->total(),
+                    "from" => $admins->firstItem(),
+                    "to" => $admins->lastItem()
+                ]
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Error in getAdmins: ' . $e->getMessage());
+
+            return response()->json([
+                "status" => "error",
+                "message" => "Failed to fetch admins"
+            ], 500);
+        }
     }
 
     public function createUser(Request $request)
@@ -66,25 +110,65 @@ class AdminController extends Controller
         ], 201);
     }
 
-    public function getUsers(Request $request)
-    {
-        $users = User::with('division')
-            ->where('role', 'user')
-            ->get();
+    public function getUsers(Request $request) {
+        try {
+            $query = User::with('division')->where('role', 'user');
 
-        return response()->json([
-            "totalElements" => $users->count(),
-            "content" => $users->map(function ($user) {
-                return [
-                    "id"          => $user->id,
-                    "username"    => $user->username,
-                    "division_id" => $user->division_id,
-                    "division"    => $user->division?->name,
-                    "created_at" => $user->created_at->format('Y-m-d H:i:s'),
-                    "updated_at" => $user->updated_at->format('Y-m-d H:i:s'),
-                ];
-            })
-        ], 200);
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('username', 'LIKE', "%{$search}%")
+                    ->orWhereHas('division', function($div) use ($search) {
+                        $div->where('name', 'LIKE', "%{$search}%");
+                    });
+                });
+            }
+
+            // Sorting
+            $sortBy = $request->get('sort_by', 'created_at');
+            $sortOrder = $request->get('sort_order', 'desc');
+            $allowedSorts = ['username', 'created_at', 'updated_at'];
+
+            if (in_array($sortBy, $allowedSorts)) {
+                $query->orderBy($sortBy, $sortOrder);
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+
+            $perPage = (int) $request->get('per_page', 10);
+            $users = $query->paginate($perPage);
+
+            return response()->json([
+                "status" => "success",
+                "totalElements" => $users->total(),
+                "content" => $users->map(function ($user) {
+                    return [
+                        "id"          => $user->id,
+                        "username"    => $user->username,
+                        "division_id" => $user->division_id,
+                        "division"    => $user->division->name ?? null,
+                        "created_at"  => $user->created_at,
+                        "updated_at"  => $user->updated_at,
+                    ];
+                }),
+                "pagination" => [
+                    "current_page" => $users->currentPage(),
+                    "last_page" => $users->lastPage(),
+                    "per_page" => $users->perPage(),
+                    "total" => $users->total(),
+                    "from" => $users->firstItem(),
+                    "to" => $users->lastItem()
+                ]
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Error in getUsers: ' . $e->getMessage());
+
+            return response()->json([
+                "status" => "error",
+                "message" => "Failed to fetch users"
+            ], 500);
+        }
     }
 
     public function updateUser(Request $request, $id)
@@ -134,7 +218,7 @@ class AdminController extends Controller
 
         $user->delete();
 
-        return response()->noContent(); 
+        return response()->noContent();
     }
 
 

@@ -123,11 +123,11 @@ export default function EditTrue() {
                             {loading ? "Updating..." : "Update"}
                             </button>
                             <button
-                            type="button"
-                            className="btn btn-secondary"
-                            onClick={() => navigate("/user/list")}
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={() => navigate("/user/list")}
                             >
-                            Kembali
+                                Kembali
                             </button>
                         </div>
                     </form>
